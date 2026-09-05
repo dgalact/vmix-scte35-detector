@@ -1,0 +1,18 @@
+# Logs & runtime
+detector.log
+relay.status
+
+# Local configurations
+*.local.*
+settings.local.cmd
+
+# Binaries & release archives
+*.exe
+ffmpeg.exe
+dist/
+vendor/
+*.zip
+
+# Operating System files
+.DS_Store
+Thumbs.db

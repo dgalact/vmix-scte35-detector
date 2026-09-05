@@ -1,0 +1,1 @@
+srt://YOUR_STREAM_IP:9001?mode=caller&transtype=live&latency=2000000&pkt_size=1316
