@@ -29,6 +29,31 @@ if errorlevel 1 (
     )
 )
 
+set "FFMPEG_BIN=%~dp0ffmpeg.exe"
+if not exist "%FFMPEG_BIN%" (
+    where ffmpeg >nul 2>&1
+    if not errorlevel 1 (
+        set "FFMPEG_BIN=ffmpeg"
+    ) else (
+        echo ========================================================
+        echo  [INFO] ffmpeg.exe was not found in folder or PATH.
+        echo  Downloading official FFmpeg release automatically...
+        echo ========================================================
+        echo.
+        powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Install-FFmpeg.ps1"
+        echo.
+        if not exist "%~dp0ffmpeg.exe" (
+            echo ========================================================
+            echo  [ERROR] Automatic FFmpeg installation failed.
+            echo  Please run Install-FFmpeg.ps1 or download ffmpeg.exe
+            echo  manually from https://ffmpeg.org and place it here.
+            echo ========================================================
+            pause
+            exit /b 1
+        )
+    )
+)
+
 echo ========================================================
 echo  Stream Ingest Relay (Raw Passthrough)
 echo ========================================================
@@ -41,7 +66,7 @@ echo.
 
 :loop
 echo [%DATE% %TIME%] Starting Ingest Relay...
-"%~dp0ffmpeg.exe" -hide_banner -loglevel warning ^
+"%FFMPEG_BIN%" -hide_banner -loglevel warning ^
   -f data -raw_packet_size 1316 ^
   -i "%SRT_URL%" ^
   -map 0:0 -c copy ^
