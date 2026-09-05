@@ -1,5 +1,7 @@
 # vMix SCTE-35 Detector & Ingest Relay
 
+**English** | [Русский](README.ru.md)
+
 Automated SCTE-35 commercial insertion and stream relay designed for broadcast production with vMix.
 
 ## Overview
