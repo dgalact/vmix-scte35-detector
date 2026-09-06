@@ -1,5 +1,5 @@
 @echo off
-title Stream Ingest Relay (SRT to vMix & Detector)
+title Stream Ingest Relay (SRT to vMix and Detector)
 cd /d "%~dp0"
 
 set "URL_FILE=%~dp0stream-url.txt"
