@@ -666,6 +666,41 @@ func (c *controller) handleCue(cue cue) {
 		}
 		c.inBreak = true
 		log.Printf("CUT -> %q", c.ad)
+
+		if cue.Duration != nil && *cue.Duration > 0 {
+			dur := *cue.Duration
+			target := c.returnTo
+			if target == "" {
+				target = c.main
+			}
+			go func(breakDur time.Duration, retTarget string) {
+				time.Sleep(breakDur)
+				c.mu.Lock()
+				defer c.mu.Unlock()
+				if !c.inBreak {
+					return
+				}
+				curState, err := c.state()
+				if err != nil {
+					log.Printf("vMix state error on fallback return: %v", err)
+					return
+				}
+				curActive := curState.inputName(curState.Active)
+				if !matches(curActive, c.ad) && !matches(curState.Active, c.ad) {
+					log.Printf("SAFETY: operator changed active input to %q; fallback return cancelled", curActive)
+					c.inBreak = false
+					c.returnTo = ""
+					return
+				}
+				log.Printf("FALLBACK TIMER: break duration %s expired without SCTE-35 IN; CUT -> %q", breakDur.Round(time.Millisecond), retTarget)
+				if err := c.cut(retTarget); err != nil {
+					log.Printf("Fallback CUT back failed: %v", err)
+					return
+				}
+				c.inBreak = false
+				c.returnTo = ""
+			}(dur, target)
+		}
 		return
 	}
 	if !c.inBreak {
